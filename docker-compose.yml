@@ -1,0 +1,43 @@
+# Everything GlyphMigrate needs: UI, API, and two sample databases (legacy source, modern target).
+#   docker compose up --build   →  http://localhost:8080
+services:
+  frontend:
+    build: ./frontend
+    ports: ["8080:80"]
+    depends_on: [backend]
+
+  backend:
+    build: ./backend
+    ports: ["8000:8000"]
+    environment:
+      GLYPH_SEED_DEMO: "1"
+      GLYPH_DEMO_SOURCE_HOST: legacy-db
+      GLYPH_DEMO_SOURCE_PORT: "5432"
+      GLYPH_DEMO_TARGET_HOST: target-db
+      GLYPH_DEMO_TARGET_PORT: "5432"
+    volumes:
+      - glyph-data:/data
+    depends_on:
+      legacy-db: { condition: service_healthy }
+      target-db: { condition: service_healthy }
+
+  # Sample legacy system: wide, denormalised tables, no index on last_modified.
+  legacy-db:
+    image: postgres:16
+    environment: { POSTGRES_USER: glyph, POSTGRES_PASSWORD: glyph, POSTGRES_DB: legacy }
+    ports: ["55432:5432"]
+    volumes:
+      - ./sample/legacy.sql:/docker-entrypoint-initdb.d/01.sql:ro
+    healthcheck: { test: ["CMD", "pg_isready", "-U", "glyph"], interval: 3s, retries: 20 }
+
+  # Sample re-modelled target: normalised and constrained. Also hosts the per-pipeline glyph_stg_* staging schemas.
+  target-db:
+    image: postgres:16
+    environment: { POSTGRES_USER: glyph, POSTGRES_PASSWORD: glyph, POSTGRES_DB: modern }
+    ports: ["55433:5432"]
+    volumes:
+      - ./sample/target.sql:/docker-entrypoint-initdb.d/01.sql:ro
+    healthcheck: { test: ["CMD", "pg_isready", "-U", "glyph"], interval: 3s, retries: 20 }
+
+volumes:
+  glyph-data:
