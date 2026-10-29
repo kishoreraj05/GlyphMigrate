@@ -1,5 +1,7 @@
 # GlyphMigrate
 
+[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+
 Design and run migrations from a legacy database into a **re-modelled** target, visually:
 drag Source → Transform → Target nodes, write the mapping SQL, validate it against real data,
 then move the data in throttled batches that don't hurt live systems.
@@ -104,3 +106,12 @@ once, and four downstream transforms build on it.
   transforms are on the roadmap.
 * Connection passwords are stored in the local SQLite metadata DB. Use a secrets manager before
   pointing this at production.
+
+## Contributing
+
+Issues and pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md). To report a security problem,
+see [SECURITY.md](SECURITY.md).
+
+## License
+
+Apache License 2.0. See [LICENSE](LICENSE) and [NOTICE](NOTICE). Copyright 2026 kishoreraj05.
