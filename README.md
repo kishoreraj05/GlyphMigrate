@@ -8,6 +8,21 @@ then move the data in throttled batches that don't hurt live systems.
 
 See [docs/DESIGN.md](docs/DESIGN.md) for the architecture and roadmap.
 
+![Pipeline canvas: a shared customers_clean transform feeding four mapping transforms, with a live preview of its rows](docs/screenshots/canvas-preview.png)
+
+<table>
+  <tr>
+    <td width="33%"><a href="docs/screenshots/validation.png"><img src="docs/screenshots/validation.png" alt="Validation blocking a load: 100,000 orders reference products not loaded yet, with sample rows"></a></td>
+    <td width="33%"><a href="docs/screenshots/advisor.png"><img src="docs/screenshots/advisor.png" alt="Source advisor flagging a full table scan per batch and suggesting an index"></a></td>
+    <td width="33%"><a href="docs/screenshots/project-run.png"><img src="docs/screenshots/project-run.png" alt="Project run: Catalog then Customers and orders, in dependency order"></a></td>
+  </tr>
+  <tr>
+    <td><b>Validate before writing.</b> A load is blocked because orders reference products another pipeline hasn't loaded yet.</td>
+    <td><b>Source advisor.</b> EXPLAINs each batch query on the live source and suggests the missing index.</td>
+    <td><b>Project run.</b> Pipelines run in foreign-key order, Catalog then Customers &amp; orders.</td>
+  </tr>
+</table>
+
 ## Run it
 
 ```bash
